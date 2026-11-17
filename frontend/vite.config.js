@@ -9,7 +9,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../backend/src/main/resources/static',
+    outDir: process.env.CI ? 'dist' : '../backend/src/main/resources/static',
     emptyOutDir: false
   }
 });
