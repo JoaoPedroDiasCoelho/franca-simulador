@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS moto_imagens (
+    moto_id BIGINT PRIMARY KEY REFERENCES motos(id) ON DELETE CASCADE,
+    conteudo BYTEA NOT NULL,
+    tipo_conteudo VARCHAR(30) NOT NULL,
+    nome_arquivo VARCHAR(255),
+    atualizado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

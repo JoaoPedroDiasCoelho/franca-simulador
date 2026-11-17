@@ -1,0 +1,5 @@
+br\com\franca\simulador\service\ConsorcioServiceTest.class
+br\com\franca\simulador\service\MotoServiceTest.class
+br\com\franca\simulador\controller\SimulacaoControllerTest.class
+br\com\franca\simulador\service\ComparadorServiceTest.class
+br\com\franca\simulador\service\FinanciamentoServiceTest.class

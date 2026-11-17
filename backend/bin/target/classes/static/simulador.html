@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Financeiro — França Simulador</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#0f1015] text-gray-100 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-[#0f1015]/90 backdrop-blur-md border-b border-[#262a38]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-red-600 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-red-600/30">
+                    F
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight text-white block leading-none">FRANÇA</span>
+                    <span class="text-xs tracking-widest text-red-500 font-bold block uppercase mt-0.5">Simulador</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-300">
+                <a href="index.html" class="hover:text-red-500 transition">Início</a>
+                <a href="motos.html" class="hover:text-red-500 transition">Catálogo de Motos</a>
+                <a href="simulador.html" class="text-red-500 hover:text-white transition">Simulador Financeiro</a>
+                <a href="http://localhost:8080/swagger-ui/index.html" target="_blank" class="hover:text-red-500 transition flex items-center gap-1.5 text-gray-400">
+                    Swagger API
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </nav>
+
+            <a href="motos.html" class="bg-[#171922] hover:bg-[#1e2230] text-gray-200 border border-[#262a38] text-sm font-bold py-2.5 px-4 rounded-lg transition">
+                Trocar Moto
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        <!-- Título -->
+        <div class="mb-8">
+            <span class="text-xs font-bold text-red-500 uppercase tracking-widest">Calculadora Avançada</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">Simulador de Financiamento & Consórcio</h1>
+            <p class="text-gray-400 text-sm mt-1">Realize projeções de parcelas pelo Sistema Price ou Consórcio e compare os custos totais.</p>
+        </div>
+
+        <!-- Banner de Moto Selecionada (se houver) -->
+        <div id="selectedMotoBanner" class="hidden mb-8 bg-[#171922] border border-red-500/40 rounded-xl p-4 sm:p-5 flex items-center gap-4 sm:gap-6 animate-fade-in">
+            <img id="motoBannerImg" src="" alt="Moto Selecionada" class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg bg-[#0f1015] border border-[#262a38]">
+            <div class="flex-1">
+                <span class="text-xs font-bold text-red-500 uppercase tracking-wider block">Motocicleta Selecionada</span>
+                <h3 id="motoBannerTitle" class="text-xl sm:text-2xl font-bold text-white leading-tight"></h3>
+                <p id="motoBannerDetails" class="text-xs sm:text-sm text-gray-400 mt-1"></p>
+            </div>
+            <button onclick="document.getElementById('motoSelect').value=''; document.getElementById('motoSelect').dispatchEvent(new Event('change'));"
+                    class="text-xs text-gray-400 hover:text-red-400 font-semibold px-3 py-1.5 rounded-lg border border-gray-800 hover:border-red-500/30 transition">
+                Desvincular
+            </button>
+        </div>
+
+        <!-- Painel de Configuração Base da Moto -->
+        <section class="bg-[#171922] border border-[#262a38] rounded-xl p-6 mb-8">
+            <h2 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                1. Defina o Valor de Referência da Moto
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Seletor do Catálogo -->
+                <div>
+                    <label for="motoSelect" class="block text-xs font-semibold text-gray-400 mb-2">
+                        Escolher Modelo do Catálogo
+                    </label>
+                    <select id="motoSelect" class="w-full bg-[#0f1015] border border-[#262a38] text-white text-sm rounded-lg p-3 focus:outline-none focus:border-red-500 transition">
+                        <option value="">Carregando catálogo...</option>
+                    </select>
+                </div>
+
+                <!-- Input de Valor Livre -->
+                <div>
+                    <label for="valorReferencia" class="block text-xs font-semibold text-gray-400 mb-2">
+                        Valor à Vista da Moto (R$)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 text-sm font-bold pointer-events-none">R$</span>
+                        <input type="number" id="valorReferencia" step="100" min="500" value="17890.00"
+                               class="w-full pl-12 pr-4 py-3 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-base focus:outline-none focus:border-red-500 transition">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navegação de Abas da Simulação -->
+        <div class="flex border-b border-[#262a38] mb-8 gap-2">
+            <button class="sim-tab-btn active bg-red-600 text-white font-bold text-sm py-3 px-6 rounded-t-lg transition flex items-center gap-2" data-tab="financiamento">
+                Financiamento (Price)
+            </button>
+            <button class="sim-tab-btn bg-[#171922] text-gray-400 font-bold text-sm py-3 px-6 rounded-t-lg hover:text-white transition flex items-center gap-2" data-tab="consorcio">
+                Consórcio de Motos
+            </button>
+            <button class="sim-tab-btn bg-[#171922] text-gray-400 font-bold text-sm py-3 px-6 rounded-t-lg hover:text-white transition flex items-center gap-2" data-tab="comparativo">
+                Comparativo Lado a Lado
+            </button>
+        </div>
+
+        <!-- Conteúdo das Abas -->
+        <div class="space-y-8">
+            <!-- ABA 1: FINANCIAMENTO -->
+            <div id="tab-financiamento" class="sim-tab-pane">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Formulário de Entrada do Financiamento -->
+                    <div class="lg:col-span-5 bg-[#171922] border border-[#262a38] rounded-xl p-6 space-y-6">
+                        <h3 class="text-lg font-bold text-white border-b border-[#262a38] pb-3">Parâmetros do Financiamento</h3>
+
+                        <!-- Valor da Entrada -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="finEntrada" class="text-xs font-semibold text-gray-300">Valor da Entrada (R$)</label>
+                                <span id="finEntradaPercent" class="text-xs font-bold text-red-400">20% do valor</span>
+                            </div>
+                            <div class="relative mb-3">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 text-sm font-bold pointer-events-none">R$</span>
+                                <input type="number" id="finEntrada" step="100" min="0" value="3500.00"
+                                       class="w-full pl-12 pr-4 py-2.5 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm focus:outline-none focus:border-red-500">
+                            </div>
+                            <input type="range" id="finEntradaRange" min="0" max="15000" step="100" value="3500"
+                                   class="w-full accent-red-600 cursor-pointer">
+
+                            <!-- Botões de atalho -->
+                            <div class="flex gap-2 mt-2">
+                                <button type="button" class="btn-quick-entrada text-xs py-1 px-2.5 bg-[#0f1015] text-gray-400 hover:text-white rounded border border-[#262a38]" data-percent="10">10%</button>
+                                <button type="button" class="btn-quick-entrada text-xs py-1 px-2.5 bg-[#0f1015] text-gray-400 hover:text-white rounded border border-[#262a38]" data-percent="20">20%</button>
+                                <button type="button" class="btn-quick-entrada text-xs py-1 px-2.5 bg-[#0f1015] text-gray-400 hover:text-white rounded border border-[#262a38]" data-percent="30">30%</button>
+                                <button type="button" class="btn-quick-entrada text-xs py-1 px-2.5 bg-[#0f1015] text-gray-400 hover:text-white rounded border border-[#262a38]" data-percent="50">50%</button>
+                            </div>
+                        </div>
+
+                        <!-- Prazo em Meses -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="finPrazo" class="text-xs font-semibold text-gray-300">Prazo (Meses)</label>
+                                <span class="text-xs text-gray-400">Entre 6 e 72 meses</span>
+                            </div>
+                            <input type="number" id="finPrazo" min="6" max="72" value="48"
+                                   class="w-full py-2.5 px-4 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm mb-3 focus:outline-none focus:border-red-500">
+                            <input type="range" id="finPrazoRange" min="6" max="72" step="6" value="48"
+                                   class="w-full accent-red-600 cursor-pointer">
+                        </div>
+
+                        <!-- Taxa de Juros Mensal -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="finTaxaJuros" class="text-xs font-semibold text-gray-300">Taxa de Juros Mensal (%)</label>
+                                <span class="text-xs text-gray-500">Padrão: 1,89% a.m.</span>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="finTaxaJuros" step="0.01" min="0" max="15" value="1.89"
+                                       class="w-full py-2.5 px-4 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm focus:outline-none focus:border-red-500">
+                                <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 text-sm font-bold pointer-events-none">% a.m.</span>
+                            </div>
+                        </div>
+
+                        <div id="finError" class="hidden p-3 rounded-lg bg-red-950/40 border border-red-500/40 text-red-400 text-xs"></div>
+
+                        <button id="btnCalcularFin" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-lg transition duration-200 shadow-lg shadow-red-900/30 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            Calcular Financiamento
+                        </button>
+                    </div>
+
+                    <!-- Resultado do Financiamento -->
+                    <div id="finResultCard" class="lg:col-span-7">
+                        <div class="bg-[#171922] border border-[#262a38] rounded-xl p-10 text-center text-gray-400">
+                            <svg class="w-12 h-12 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            <h4 class="text-white font-bold text-lg mb-1">Aguardando Parâmetros</h4>
+                            <p class="text-xs">Defina a entrada e o prazo e clique em <strong>Calcular Financiamento</strong> para ver as parcelas pela Tabela Price.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 2: CONSÓRCIO -->
+            <div id="tab-consorcio" class="sim-tab-pane hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Formulário de Consórcio -->
+                    <div class="lg:col-span-5 bg-[#171922] border border-[#262a38] rounded-xl p-6 space-y-6">
+                        <h3 class="text-lg font-bold text-white border-b border-[#262a38] pb-3">Parâmetros do Consórcio</h3>
+
+                        <!-- Prazo do Consórcio -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="conPrazo" class="text-xs font-semibold text-gray-300">Prazo do Grupo (Meses)</label>
+                                <span class="text-xs text-gray-400">Padrão comum: 60 meses</span>
+                            </div>
+                            <input type="number" id="conPrazo" min="6" max="100" value="60"
+                                   class="w-full py-2.5 px-4 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm mb-3 focus:outline-none focus:border-emerald-500">
+                            <input type="range" id="conPrazoRange" min="12" max="100" step="6" value="60"
+                                   class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Taxa de Administração Total -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="conTaxaAdm" class="text-xs font-semibold text-gray-300">Taxa Administrativa Total (%)</label>
+                                <span class="text-xs text-gray-500">Média de mercado: 15%</span>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="conTaxaAdm" step="0.5" min="0" max="40" value="15.00"
+                                       class="w-full py-2.5 px-4 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm focus:outline-none focus:border-emerald-500">
+                                <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 text-sm font-bold pointer-events-none">% total</span>
+                            </div>
+                        </div>
+
+                        <!-- Fundo de Reserva -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="conFundoReserva" class="text-xs font-semibold text-gray-300">Fundo de Reserva (%)</label>
+                                <span class="text-xs text-gray-500">Segurança do grupo (2% padrão)</span>
+                            </div>
+                            <div class="relative">
+                                <input type="number" id="conFundoReserva" step="0.5" min="0" max="10" value="2.00"
+                                       class="w-full py-2.5 px-4 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm focus:outline-none focus:border-emerald-500">
+                                <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 text-sm font-bold pointer-events-none">% total</span>
+                            </div>
+                        </div>
+
+                        <!-- Seguro Mensal -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="conSeguro" class="text-xs font-semibold text-gray-300">Seguro Opcional por Parcela (R$)</label>
+                                <span class="text-xs text-gray-500">Opcional</span>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 text-sm font-bold pointer-events-none">R$</span>
+                                <input type="number" id="conSeguro" step="5" min="0" value="0.00"
+                                       class="w-full pl-12 pr-4 py-2.5 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+
+                        <div id="conError" class="hidden p-3 rounded-lg bg-red-950/40 border border-red-500/40 text-red-400 text-xs"></div>
+
+                        <button id="btnCalcularCon" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-lg transition duration-200 shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            Calcular Consórcio
+                        </button>
+                    </div>
+
+                    <!-- Resultado do Consórcio -->
+                    <div id="conResultCard" class="lg:col-span-7">
+                        <div class="bg-[#171922] border border-[#262a38] rounded-xl p-10 text-center text-gray-400">
+                            <svg class="w-12 h-12 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h4 class="text-white font-bold text-lg mb-1">Aguardando Parâmetros</h4>
+                            <p class="text-xs">Defina o prazo e as taxas administrativas e clique em <strong>Calcular Consórcio</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: COMPARATIVO LADO A LADO -->
+            <div id="tab-comparativo" class="sim-tab-pane hidden">
+                <div class="bg-[#171922] border border-[#262a38] rounded-xl p-6 mb-8">
+                    <h3 class="text-lg font-bold text-white border-b border-[#262a38] pb-3 mb-6">Parâmetros Comuns para Comparação</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div>
+                            <label for="compEntrada" class="block text-xs font-semibold text-gray-300 mb-2">Entrada no Financiamento (R$)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 text-sm font-bold pointer-events-none">R$</span>
+                                <input type="number" id="compEntrada" step="100" min="0" value="3500.00"
+                                       class="w-full pl-12 pr-4 py-2.5 bg-[#0f1015] border border-[#262a38] rounded-lg text-white font-bold text-sm focus:outline-none focus:border-red-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="compPrazo" class="block text-xs font-semibold text-gray-300 mb-2">Prazo Comum (Meses)</label>
+                            <select id="compPrazo" class="w-full bg-[#0f1015] border border-[#262a38] text-white font-bold text-sm rounded-lg p-2.5 focus:outline-none focus:border-red-500">
+                                <option value="24">24 meses (2 anos)</option>
+                                <option value="36">36 meses (3 anos)</option>
+                                <option value="48" selected>48 meses (4 anos)</option>
+                                <option value="60">60 meses (5 anos)</option>
+                                <option value="72">72 meses (6 anos)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <button id="btnComparar" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-200 shadow-lg shadow-red-900/30 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                Comparar Financiamento vs Consórcio
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="compError" class="hidden mt-4 p-3 rounded-lg bg-red-950/40 border border-red-500/40 text-red-400 text-xs"></div>
+                </div>
+
+                <!-- Painel de Resultados do Comparativo -->
+                <div id="compResultCard">
+                    <div class="bg-[#171922] border border-[#262a38] rounded-xl p-12 text-center text-gray-400">
+                        <svg class="w-14 h-14 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <h4 class="text-white font-bold text-lg mb-1">Aguardando Comparação</h4>
+                        <p class="text-xs">Clique no botão <strong>Comparar Financiamento vs Consórcio</strong> acima para visualizar a análise completa lado a lado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="bg-[#0b0c10] border-t border-[#262a38] py-8 text-xs text-gray-500 text-center">
+        <p>França Simulador • Todos os cálculos são estimativas didáticas e acadêmicas para TCC</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/simulador.js"></script>
+</body>
+</html>
