@@ -2,6 +2,8 @@ package br.com.franca.simulador.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
@@ -15,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
     private final JavaMailSender mailSender;
     private final String gmailUsername;
@@ -32,6 +36,7 @@ public class EmailService {
 
     public void enviarLinkDeCadastro(String nome, String email, String link) {
         if (gmailUsername.isBlank() || appPassword.isBlank()) {
+            logger.error("Gmail SMTP is not configured: GMAIL_USERNAME or GMAIL_APP_PASSWORD is empty.");
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     "Configure GMAIL_USERNAME e GMAIL_APP_PASSWORD para enviar e-mails."
@@ -67,12 +72,14 @@ public class EmailService {
             helper.setText(text, html);
             mailSender.send(message);
         } catch (MessagingException | UnsupportedEncodingException exception) {
+            logger.error("Could not prepare registration email for Gmail SMTP.", exception);
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     "Nao foi possivel preparar o e-mail de cadastro.",
                     exception
             );
         } catch (MailException exception) {
+            logger.error("Gmail SMTP failed to send the registration email.", exception);
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     "Gmail recusou o envio. Confira o usuario, a senha de app e as configuracoes SMTP.",
