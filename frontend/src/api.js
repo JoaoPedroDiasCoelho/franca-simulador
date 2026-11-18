@@ -1,7 +1,11 @@
 const configuredBase = import.meta.env.VITE_API_BASE_URL;
-const API_BASE_URL = configuredBase
-  ? `${configuredBase.replace(/\/$/, '')}/api`
-  : '/api';
+const API_ORIGIN = configuredBase?.replace(/\/$/, '') || '';
+const API_BASE_URL = API_ORIGIN ? `${API_ORIGIN}/api` : '/api';
+
+export function apiAssetUrl(path) {
+  if (!path || /^https?:\/\//i.test(path) || path.startsWith('data:')) return path;
+  return API_ORIGIN ? `${API_ORIGIN}${path.startsWith('/') ? '' : '/'}${path}` : path;
+}
 
 function authorization(credentials) {
   const bytes = new TextEncoder().encode(`${credentials.usuario}:${credentials.senha}`);
