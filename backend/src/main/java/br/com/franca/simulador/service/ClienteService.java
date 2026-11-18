@@ -5,6 +5,8 @@ import br.com.franca.simulador.dto.request.SolicitarCadastroClienteRequestDTO;
 import br.com.franca.simulador.dto.response.CadastroSolicitadoResponseDTO;
 import br.com.franca.simulador.dto.response.ClienteConviteResponseDTO;
 import br.com.franca.simulador.dto.response.MensagemResponseDTO;
+import br.com.franca.simulador.model.ClienteConvite;
+import br.com.franca.simulador.model.Usuario;
 import br.com.franca.simulador.repository.ClienteConviteRepository;
 import br.com.franca.simulador.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,19 +53,23 @@ public class ClienteService {
     @Transactional
     public CadastroSolicitadoResponseDTO solicitarCadastro(SolicitarCadastroClienteRequestDTO dados) {
         String email = dados.email().trim().toLowerCase(Locale.ROOT);
-        if (usuarioRepository.existe(email)) {
+        if (usuarioRepository.existsByUsername(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe uma conta com esse e-mail.");
         }
 
         byte[] tokenBytes = new byte[32];
         RANDOM.nextBytes(tokenBytes);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
-        conviteRepository.salvarConvite(
-                email,
-                dados.nome().trim(),
-                hashToken(token),
-                Instant.now().plusSeconds(TOKEN_MINUTES * 60L)
-        );
+        String nome = dados.nome().trim();
+        String tokenHash = hashToken(token);
+        Instant expiraEm = Instant.now().plusSeconds(TOKEN_MINUTES * 60L);
+        ClienteConvite convite = conviteRepository.findById(email)
+                .map(existente -> {
+                    existente.atualizar(nome, tokenHash, expiraEm);
+                    return existente;
+                })
+                .orElseGet(() -> new ClienteConvite(email, nome, tokenHash, expiraEm));
+        conviteRepository.save(convite);
 
         String link = baseUrl + "/#/cliente/confirmacao?token=" + token;
         String idEnvio = emailService.enviarLinkDeCadastro(dados.nome().trim(), email, link);
@@ -74,27 +80,30 @@ public class ClienteService {
     }
 
     public ClienteConviteResponseDTO validarConvite(String token) {
-        var convite = conviteRepository.buscarConviteValido(hashToken(token))
+        var convite = conviteRepository.findByTokenHashAndExpiraEmAfter(hashToken(token), Instant.now())
                 .orElseThrow(() -> conviteInvalido());
-        return new ClienteConviteResponseDTO(convite.nome(), convite.email());
+        return new ClienteConviteResponseDTO(convite.getNome(), convite.getEmail());
     }
 
     @Transactional
     public MensagemResponseDTO concluirCadastro(String token, SenhaClienteRequestDTO dados) {
         String tokenHash = hashToken(token);
-        var convite = conviteRepository.buscarConviteValido(tokenHash)
+        var convite = conviteRepository.findByTokenHashAndExpiraEmAfter(tokenHash, Instant.now())
                 .orElseThrow(() -> conviteInvalido());
 
-        if (usuarioRepository.existe(convite.email())) {
+        if (usuarioRepository.existsByUsername(convite.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe uma conta com esse e-mail.");
         }
 
-        usuarioRepository.criarCliente(
-                convite.email(),
-                convite.nome(),
-                passwordEncoder.encode(dados.senha())
-        );
-        conviteRepository.removerConvite(convite.email(), tokenHash);
+        usuarioRepository.save(new Usuario(
+                convite.getEmail(),
+                convite.getEmail(),
+                convite.getNome(),
+                passwordEncoder.encode(dados.senha()),
+                true,
+                "ROLE_CLIENTE"
+        ));
+        conviteRepository.deleteByEmailAndTokenHash(convite.getEmail(), tokenHash);
         return new MensagemResponseDTO("Senha cadastrada. Agora voce ja pode entrar na sua conta.");
     }
 

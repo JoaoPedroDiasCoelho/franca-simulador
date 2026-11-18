@@ -92,6 +92,24 @@ export function AdminPage() {
       setUserSaving(false);
     }
   };
+  const deleteMoto = async (id) => {
+    try {
+      await api.excluirMoto(id, credentials);
+      await loadMotos();
+    } catch (error) {
+      if (error.status === 401 || error.status === 403) throw new Error('Acesso expirado. Entre novamente para excluir motos.');
+      throw error;
+    }
+  };
+  const deleteUser = async (username) => {
+    try {
+      await api.excluirUsuario(username, credentials);
+      await loadUsers();
+    } catch (error) {
+      if (error.status === 401 || error.status === 403) throw new Error('Acesso expirado. Entre novamente para excluir usuários.');
+      throw error;
+    }
+  };
   const navigate = (nextView) => {
     if (nextView === 'motos') setEditingMoto(null);
     setView(nextView);
@@ -144,9 +162,9 @@ export function AdminPage() {
   return <main className="admin-app">
     <AdminSidebar active={view} motoCount={motos.length} onNavigate={navigate} onLogout={logout} />
     <div className="admin-app-main">
-      {view === 'motos' && <AdminMotoList motos={motos} loading={motosLoading} error={motosError} onRefresh={() => loadMotos()} onCreate={() => { setEditingMoto(null); setView('cadastro-moto'); }} onEdit={editMoto} />}
+      {view === 'motos' && <AdminMotoList motos={motos} loading={motosLoading} error={motosError} onRefresh={() => loadMotos()} onCreate={() => { setEditingMoto(null); setView('cadastro-moto'); }} onEdit={editMoto} onDelete={deleteMoto} />}
       {view === 'cadastro-moto' && <AdminMotoForm key={editingMoto?.id ?? 'nova-moto'} moto={editingMoto} saving={motoSaving} onCancel={() => navigate('motos')} onSubmit={saveMoto} />}
-      {view === 'usuarios' && <AdminUsers users={users} loading={usersLoading} error={usersError} saving={userSaving} onRefresh={() => loadUsers()} onCreate={createUser} />}
+      {view === 'usuarios' && <AdminUsers users={users} loading={usersLoading} error={usersError} saving={userSaving} currentUsername={credentials.usuario} onRefresh={() => loadUsers()} onCreate={createUser} onDelete={deleteUser} />}
     </div>
   </main>;
 }

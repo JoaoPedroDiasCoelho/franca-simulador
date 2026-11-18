@@ -2,13 +2,32 @@ import { useMemo, useState } from 'react';
 import { currency } from '../api.js';
 import MotoImage from './MotoImage.jsx';
 
-export default function AdminMotoList({ motos, loading, error, onRefresh, onCreate, onEdit }) {
+export default function AdminMotoList({ motos, loading, error, onRefresh, onCreate, onEdit, onDelete }) {
   const [search, setSearch] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
+  const [actionMessage, setActionMessage] = useState('');
+  const [actionError, setActionError] = useState(false);
   const filteredMotos = useMemo(() => {
     const term = search.trim().toLocaleLowerCase('pt-BR');
     if (!term) return motos;
     return motos.filter((moto) => `${moto.marca} ${moto.modelo} ${moto.categoria}`.toLocaleLowerCase('pt-BR').includes(term));
   }, [motos, search]);
+
+  const deleteMoto = async (moto) => {
+    if (!window.confirm(`Deseja excluir ${moto.marca} ${moto.modelo}? Esta ação não pode ser desfeita.`)) return;
+    setDeletingId(moto.id);
+    setActionMessage('');
+    setActionError(false);
+    try {
+      await onDelete(moto.id);
+      setActionMessage(`${moto.marca} ${moto.modelo} foi excluída.`);
+    } catch (requestError) {
+      setActionError(true);
+      setActionMessage(requestError.message);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return <section className="admin-workspace">
     <div className="admin-page-heading">
@@ -37,12 +56,13 @@ export default function AdminMotoList({ motos, loading, error, onRefresh, onCrea
                   <td><span className="admin-category-pill">{moto.categoria}</span></td>
                   <td>{moto.anoModelo} <span className="admin-muted">·</span> {moto.cilindrada} cc</td>
                   <td className="admin-price-cell">{currency(moto.preco)}</td>
-                  <td><button className="admin-edit-button" type="button" onClick={() => onEdit(moto)} aria-label={`Editar ${moto.marca} ${moto.modelo}`}>Editar <span aria-hidden="true">↗</span></button></td>
+                  <td><div className="admin-row-actions"><button className="admin-edit-button" type="button" onClick={() => onEdit(moto)} aria-label={`Editar ${moto.marca} ${moto.modelo}`}>Editar <span aria-hidden="true">↗</span></button><button className="admin-delete-button" type="button" onClick={() => deleteMoto(moto)} disabled={deletingId !== null} aria-label={`Excluir ${moto.marca} ${moto.modelo}`}>{deletingId === moto.id ? 'Excluindo…' : 'Excluir'}</button></div></td>
                 </tr>)
                   : <tr><td colSpan="5"><div className="admin-table-state">{search ? 'Nenhuma moto corresponde à busca.' : 'Seu catálogo ainda está vazio.'}</div></td></tr>}
           </tbody>
         </table>
       </div>
+      <p className={`form-message ${actionError ? 'message-error' : ''}`} role="status" aria-live="polite">{actionMessage}</p>
     </div>
   </section>;
 }

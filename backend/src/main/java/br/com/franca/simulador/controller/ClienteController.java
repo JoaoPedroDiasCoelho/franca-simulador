@@ -58,7 +58,12 @@ public class ClienteController {
     @GetMapping("/me")
     public ClienteAtualResponseDTO contaAtual(Authentication authentication) {
         String usuario = authentication.getName();
-        return new ClienteAtualResponseDTO(usuario, usuarioRepository.buscarNome(usuario));
+        String nome = usuarioRepository.findById(usuario)
+                .map(conta -> conta.getNome() == null || conta.getNome().isBlank()
+                        ? usuario
+                        : conta.getNome().trim())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta nao encontrada."));
+        return new ClienteAtualResponseDTO(usuario, nome);
     }
 
     private static String tokenBearer(String authorization) {

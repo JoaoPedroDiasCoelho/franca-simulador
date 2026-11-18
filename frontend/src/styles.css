@@ -351,6 +351,10 @@ tbody th { font-weight: 600; }
 .admin-edit-button { border: 0; padding: 7px 9px; color: #676861; background: transparent; font-size: 10px; }
 .admin-edit-button:hover { color: var(--red); }
 .admin-edit-button span { margin-left: 4px; }
+.admin-row-actions { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.admin-delete-button { border: 1px solid #ead8d5; border-radius: 6px; padding: 6px 8px; color: #a13d34; background: #fff; font-size: 9px; }
+.admin-delete-button:hover:not(:disabled) { border-color: #bd5a50; background: #fbf3f1; }
+.admin-delete-button:disabled { cursor: not-allowed; opacity: .55; }
 .admin-table-state { display: grid; min-height: 118px; place-items: center; gap: 10px; color: #80817a; font-size: 11px; text-align: center; }
 .admin-table-state p { margin: 0; }
 .admin-table-state.is-error { color: #ae3930; }

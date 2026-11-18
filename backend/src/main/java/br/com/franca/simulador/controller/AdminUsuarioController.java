@@ -4,8 +4,12 @@ import br.com.franca.simulador.dto.request.UsuarioCadastroRequestDTO;
 import br.com.franca.simulador.dto.response.UsuarioResponseDTO;
 import br.com.franca.simulador.service.AdminUsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +37,14 @@ public class AdminUsuarioController {
     public ResponseEntity<UsuarioResponseDTO> cadastrar(@Valid @RequestBody UsuarioCadastroRequestDTO dados) {
         UsuarioResponseDTO usuario = adminUsuarioService.cadastrar(dados);
         return ResponseEntity.created(URI.create("/api/admin/users")).body(usuario);
+    }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> excluir(
+            @PathVariable String username,
+            @AuthenticationPrincipal UserDetails usuarioAutenticado
+    ) {
+        adminUsuarioService.excluir(username, usuarioAutenticado.getUsername());
+        return ResponseEntity.noContent().build();
     }
 }

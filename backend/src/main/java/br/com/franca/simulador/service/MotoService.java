@@ -3,6 +3,7 @@ package br.com.franca.simulador.service;
 import br.com.franca.simulador.dto.response.MotoResponseDTO;
 import br.com.franca.simulador.dto.request.MotoCadastroRequestDTO;
 import br.com.franca.simulador.model.Moto;
+import br.com.franca.simulador.model.MotoImagem;
 import br.com.franca.simulador.repository.MotoImagemRepository;
 import br.com.franca.simulador.repository.MotoRepository;
 import jakarta.persistence.criteria.Predicate;
@@ -71,7 +72,7 @@ public class MotoService {
         if (imagem != null) {
             moto.setImagemUrl("/api/motos/" + moto.getId() + "/imagem");
             moto = motoRepository.save(moto);
-            motoImagemRepository.salvar(moto.getId(), imagem.conteudo(), imagem.tipoConteudo());
+            motoImagemRepository.save(new MotoImagem(moto.getId(), imagem.conteudo(), imagem.tipoConteudo()));
         }
 
         return MotoResponseDTO.fromEntity(moto);
@@ -98,13 +99,13 @@ public class MotoService {
             String imagemUrl = limparOpcional(dados.imagemUrl());
             moto.setImagemUrl(imagemUrl);
             if (!("/api/motos/" + moto.getId() + "/imagem").equals(imagemUrl)) {
-                motoImagemRepository.excluirPorMotoId(moto.getId());
+                motoImagemRepository.deleteById(moto.getId());
             }
         }
 
         moto = motoRepository.save(moto);
         if (imagem != null) {
-            motoImagemRepository.salvar(moto.getId(), imagem.conteudo(), imagem.tipoConteudo());
+            motoImagemRepository.save(new MotoImagem(moto.getId(), imagem.conteudo(), imagem.tipoConteudo()));
         }
 
         return MotoResponseDTO.fromEntity(moto);
@@ -116,8 +117,17 @@ public class MotoService {
             return Optional.empty();
         }
 
-        return motoImagemRepository.buscarPorMotoId(id)
-                .map(imagem -> new ImagemMoto(imagem.conteudo(), imagem.tipoConteudo()));
+        return motoImagemRepository.findById(id)
+                .map(imagem -> new ImagemMoto(imagem.getConteudo(), imagem.getTipoConteudo()));
+    }
+
+    @Transactional
+    public void excluirMoto(Long id) {
+        Moto moto = motoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Motocicleta com ID " + id + " não encontrada no catálogo"));
+        motoImagemRepository.deleteById(id);
+        motoRepository.delete(moto);
     }
 
     private ImagemEnviada lerImagem(MultipartFile arquivo) {

@@ -1,4 +1,3 @@
-C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\config\CorsConfig.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\config\SecurityConfig.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\controller\AdminMotoController.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\controller\AdminUsuarioController.java
@@ -23,7 +22,10 @@ C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\dto\response\MotoResponseDTO.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\dto\response\UsuarioResponseDTO.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\FrancaSimuladorApplication.java
+C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\model\ClienteConvite.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\model\Moto.java
+C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\model\MotoImagem.java
+C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\model\Usuario.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\repository\ClienteConviteRepository.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\repository\MotoImagemRepository.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\repository\MotoRepository.java

@@ -1,83 +1,26 @@
 package br.com.franca.simulador.repository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import br.com.franca.simulador.model.Usuario;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UsuarioRepository {
+public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
-    private final JdbcTemplate jdbcTemplate;
+    List<Usuario> findByRoleOrderByUsername(String role);
 
-    public UsuarioRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    Optional<Usuario> findByUsernameAndRole(String username, String role);
 
-    public List<String> listarAdministradores() {
-        return jdbcTemplate.queryForList(
-                "SELECT username FROM users WHERE role = ? ORDER BY username",
-                String.class,
-                "ROLE_ADMIN"
-        );
-    }
+    boolean existsByUsername(String username);
 
-    public Optional<UsuarioAutenticacao> buscarParaAutenticacao(String username) {
-        return jdbcTemplate.query("""
-                SELECT username, password, enabled, role
-                FROM users
-                WHERE username = ?
-                """, result -> result.next()
-                ? Optional.of(new UsuarioAutenticacao(
-                        result.getString("username"),
-                        result.getString("password"),
-                        result.getBoolean("enabled"),
-                        result.getString("role")
-                ))
-                : Optional.empty(), username);
-    }
-
-    public String buscarNome(String username) {
-        return jdbcTemplate.queryForObject(
-                "SELECT COALESCE(NULLIF(BTRIM(nome), ''), username) FROM users WHERE username = ?",
-                String.class,
-                username
-        );
-    }
-
-    public boolean existe(String username) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-                "SELECT EXISTS (SELECT 1 FROM users WHERE username = ?)",
-                Boolean.class,
-                username
-        ));
-    }
-
-    public void criarCliente(String email, String nome, String senhaCodificada) {
-        jdbcTemplate.update("""
-                INSERT INTO users (username, email, nome, password, enabled, role)
-                VALUES (?, ?, ?, ?, TRUE, 'ROLE_CLIENTE')
-                """, email, email, nome, senhaCodificada);
-    }
-
-    public void criarAdministrador(String username, String senhaCodificada) {
-        jdbcTemplate.update("""
-                INSERT INTO users (username, password, enabled, role)
-                VALUES (?, ?, TRUE, 'ROLE_ADMIN')
-                """, username, senhaCodificada);
-    }
-
-    public void salvarAdministradorConfigurado(String username, String senhaCodificada) {
-        jdbcTemplate.update("""
-                INSERT INTO users (username, password, enabled, role)
-                VALUES (?, ?, TRUE, 'ROLE_ADMIN')
-                ON CONFLICT (username) DO UPDATE
-                SET password = EXCLUDED.password,
-                    enabled = TRUE,
-                    role = 'ROLE_ADMIN'
-                """, username, senhaCodificada);
-    }
-
-    public record UsuarioAutenticacao(String username, String password, boolean enabled, String role) {}
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select usuario from Usuario usuario where usuario.role = :role and usuario.enabled = true")
+    List<Usuario> findEnabledByRoleForUpdate(@Param("role") String role);
 }

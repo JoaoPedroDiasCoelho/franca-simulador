@@ -6,6 +6,7 @@ import br.com.franca.simulador.service.MotoService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,5 +39,11 @@ public class AdminMotoController {
             @RequestPart(value = "imagem", required = false) MultipartFile imagem
     ) {
         return ResponseEntity.ok(motoService.atualizarMoto(id, dados, imagem));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        motoService.excluirMoto(id);
+        return ResponseEntity.noContent().build();
     }
 }

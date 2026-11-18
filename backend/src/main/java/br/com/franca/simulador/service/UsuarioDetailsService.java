@@ -18,13 +18,13 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var usuario = usuarioRepository.buscarParaAutenticacao(username)
+        var usuario = usuarioRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
 
-        return User.withUsername(usuario.username())
-                .password(usuario.password())
-                .disabled(!usuario.enabled())
-                .authorities(usuario.role())
+        return User.withUsername(usuario.getUsername())
+                .password(usuario.getPassword())
+                .disabled(!usuario.isEnabled())
+                .authorities(usuario.getRole())
                 .build();
     }
 }

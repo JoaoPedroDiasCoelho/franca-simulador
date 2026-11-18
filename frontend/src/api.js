@@ -63,7 +63,15 @@ export const api = {
     return request(`/motos${params.size ? `?${params}` : ''}`);
   },
   getMotosAdmin: (credentials) => request('/admin/motos', { headers: withAuth(credentials) }),
+  excluirMoto: (id, credentials) => request(`/admin/motos/${id}`, {
+    method: 'DELETE',
+    headers: withAuth(credentials)
+  }),
   getUsuariosAdmin: (credentials) => request('/admin/users', { headers: withAuth(credentials) }),
+  excluirUsuario: (username, credentials) => request(`/admin/users/${encodeURIComponent(username)}`, {
+    method: 'DELETE',
+    headers: withAuth(credentials)
+  }),
   validarAcessoAdmin: (credentials) => request('/motos/admin-access', { headers: withAuth(credentials) }),
   cadastrarMoto: (dados, imagem, credentials) => {
     const body = new FormData();
