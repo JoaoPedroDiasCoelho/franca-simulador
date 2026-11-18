@@ -2,6 +2,7 @@ package br.com.franca.simulador.service;
 
 import br.com.franca.simulador.dto.request.UsuarioCadastroRequestDTO;
 import br.com.franca.simulador.dto.response.UsuarioResponseDTO;
+import br.com.franca.simulador.exception.RegraDeNegocioException;
 import br.com.franca.simulador.model.Usuario;
 import br.com.franca.simulador.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ import java.util.List;
 @Service
 public class AdminUsuarioService {
 
-    private static final String ROLE_ADMIN = "ROLE_ADMIN";
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -28,7 +28,7 @@ public class AdminUsuarioService {
     }
 
     public List<UsuarioResponseDTO> listarAdministradores() {
-        return usuarioRepository.findByRoleOrderByUsername(ROLE_ADMIN).stream()
+        return usuarioRepository.findByRoleOrderByUsername(Usuario.ROLE_ADMIN).stream()
                 .map(usuario -> new UsuarioResponseDTO(usuario.getUsername()))
                 .toList();
     }
@@ -39,28 +39,21 @@ public class AdminUsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe um usuario com esse nome");
         }
 
-        usuarioRepository.save(new Usuario(
-                usuario,
-                passwordEncoder.encode(dados.senha()),
-                true,
-                ROLE_ADMIN
-        ));
+        usuarioRepository.save(Usuario.administrador(usuario, passwordEncoder.encode(dados.senha())));
 
         return new UsuarioResponseDTO(usuario);
     }
 
     @Transactional
     public void excluir(String username, String usuarioAutenticado) {
-        if (username.equals(usuarioAutenticado)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Nao e permitido excluir o usuario autenticado.");
-        }
-
-        List<Usuario> administradoresAtivos = usuarioRepository.findEnabledByRoleForUpdate(ROLE_ADMIN);
-        Usuario usuario = usuarioRepository.findByUsernameAndRole(username, ROLE_ADMIN)
+        List<Usuario> administradoresAtivos = usuarioRepository.findEnabledByRoleForUpdate(Usuario.ROLE_ADMIN);
+        Usuario usuario = usuarioRepository.findByUsernameAndRole(username, Usuario.ROLE_ADMIN)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado."));
 
-        if (usuario.isEnabled() && administradoresAtivos.size() <= 1) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "O ultimo administrador nao pode ser excluido.");
+        try {
+            usuario.validarExclusaoPor(usuarioAutenticado, administradoresAtivos.size());
+        } catch (RegraDeNegocioException exception) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage(), exception);
         }
 
         usuarioRepository.delete(usuario);

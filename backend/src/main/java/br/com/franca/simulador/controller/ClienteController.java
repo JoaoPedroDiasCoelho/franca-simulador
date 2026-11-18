@@ -6,6 +6,7 @@ import br.com.franca.simulador.dto.response.CadastroSolicitadoResponseDTO;
 import br.com.franca.simulador.dto.response.ClienteAtualResponseDTO;
 import br.com.franca.simulador.dto.response.ClienteConviteResponseDTO;
 import br.com.franca.simulador.dto.response.MensagemResponseDTO;
+import br.com.franca.simulador.model.Usuario;
 import br.com.franca.simulador.repository.UsuarioRepository;
 import br.com.franca.simulador.service.ClienteService;
 import jakarta.validation.Valid;
@@ -59,9 +60,7 @@ public class ClienteController {
     public ClienteAtualResponseDTO contaAtual(Authentication authentication) {
         String usuario = authentication.getName();
         String nome = usuarioRepository.findById(usuario)
-                .map(conta -> conta.getNome() == null || conta.getNome().isBlank()
-                        ? usuario
-                        : conta.getNome().trim())
+                .map(Usuario::nomeExibicao)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta nao encontrada."));
         return new ClienteAtualResponseDTO(usuario, nome);
     }

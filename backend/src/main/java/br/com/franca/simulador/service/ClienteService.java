@@ -95,13 +95,10 @@ public class ClienteService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe uma conta com esse e-mail.");
         }
 
-        usuarioRepository.save(new Usuario(
-                convite.getEmail(),
+        usuarioRepository.save(Usuario.cliente(
                 convite.getEmail(),
                 convite.getNome(),
-                passwordEncoder.encode(dados.senha()),
-                true,
-                "ROLE_CLIENTE"
+                passwordEncoder.encode(dados.senha())
         ));
         conviteRepository.deleteByEmailAndTokenHash(convite.getEmail(), tokenHash);
         return new MensagemResponseDTO("Senha cadastrada. Agora voce ja pode entrar na sua conta.");

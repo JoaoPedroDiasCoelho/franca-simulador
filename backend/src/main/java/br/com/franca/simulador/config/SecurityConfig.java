@@ -80,11 +80,10 @@ public class SecurityConfig {
                 throw new IllegalStateException("ADMIN_USERNAME deve ter entre 1 e 50 caracteres");
             }
 
+            String senhaCodificada = passwordEncoder.encode(password);
             Usuario administrador = usuarioRepository.findById(username)
-                    .orElseGet(() -> new Usuario(username, "", true, "ROLE_ADMIN"));
-            administrador.setPassword(passwordEncoder.encode(password));
-            administrador.setEnabled(true);
-            administrador.setRole("ROLE_ADMIN");
+                    .orElseGet(() -> Usuario.administrador(username, senhaCodificada));
+            administrador.configurarComoAdministrador(senhaCodificada);
             usuarioRepository.save(administrador);
         };
     }

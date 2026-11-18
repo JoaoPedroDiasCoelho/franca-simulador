@@ -12,6 +12,7 @@ br\com\franca\simulador\service\MotoService.class
 br\com\franca\simulador\dto\response\MensagemResponseDTO.class
 br\com\franca\simulador\model\Moto.class
 br\com\franca\simulador\repository\UsuarioRepository.class
+br\com\franca\simulador\exception\RegraDeNegocioException.class
 br\com\franca\simulador\service\MathJsClient$MathJsRequest.class
 br\com\franca\simulador\service\EmailService$SendPulseResponse.class
 br\com\franca\simulador\controller\ClienteController.class

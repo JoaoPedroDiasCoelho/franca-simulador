@@ -21,6 +21,7 @@ C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\dto\response\MensagemResponseDTO.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\dto\response\MotoResponseDTO.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\dto\response\UsuarioResponseDTO.java
+C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\exception\RegraDeNegocioException.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\FrancaSimuladorApplication.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\model\ClienteConvite.java
 C:\Users\JOAO\.gemini\antigravity\scratch\franca-simulador\backend\src\main\java\br\com\franca\simulador\model\Moto.java
