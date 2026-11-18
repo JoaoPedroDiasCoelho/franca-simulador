@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 @Service
 public class EmailService {
@@ -25,13 +27,12 @@ public class EmailService {
     private final String appPassword;
 
     public EmailService(
-            JavaMailSender mailSender,
             @Value("${GMAIL_USERNAME:}") String gmailUsername,
             @Value("${GMAIL_APP_PASSWORD:}") String appPassword
     ) {
-        this.mailSender = mailSender;
         this.gmailUsername = gmailUsername;
         this.appPassword = appPassword;
+        this.mailSender = criarMailSender(gmailUsername, appPassword);
     }
 
     public void enviarLinkDeCadastro(String nome, String email, String link) {
@@ -94,5 +95,23 @@ public class EmailService {
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
                 .replace("'", "&#39;");
+    }
+
+    private static JavaMailSender criarMailSender(String username, String appPassword) {
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        sender.setHost("smtp.gmail.com");
+        sender.setPort(587);
+        sender.setUsername(username);
+        sender.setPassword(appPassword.replaceAll("\\s", ""));
+        sender.setDefaultEncoding(StandardCharsets.UTF_8.name());
+
+        Properties properties = sender.getJavaMailProperties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.starttls.required", "true");
+        properties.put("mail.smtp.connectiontimeout", "5000");
+        properties.put("mail.smtp.timeout", "10000");
+        properties.put("mail.smtp.writetimeout", "10000");
+        return sender;
     }
 }

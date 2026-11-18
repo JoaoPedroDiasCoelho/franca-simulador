@@ -210,7 +210,7 @@ APP_BASE_URL=<endereço público da aplicação>
 
 A URL `postgresql://...` do Railway deve virar `jdbc:postgresql://...` em `DB_URL`, pois a aplicação usa o driver JDBC do Java. Mantenha a API e o Postgres no mesmo projeto e ambiente do Railway para que o endereço privado `postgres.railway.internal` resolva. O servidor usa automaticamente a variável `PORT` do Railway; localmente, continua usando `SERVER_PORT` ou a porta `8080`.
 
-O cadastro envia o convite pelo SMTP do Gmail (`smtp.gmail.com:587`, com STARTTLS). Configure `GMAIL_USERNAME` com a conta Gmail e `GMAIL_APP_PASSWORD` com uma senha de app do Google; a senha normal da conta não deve ser usada. A conta precisa ter a verificação em duas etapas ativada para gerar uma senha de app. `APP_BASE_URL` deve ser a URL pública do sistema para que o link enviado por e-mail abra a tela correta.
+O cadastro envia o convite pelo SMTP do Gmail (`smtp.gmail.com:587`, com STARTTLS). Configure `GMAIL_USERNAME` com a conta Gmail e `GMAIL_APP_PASSWORD` com uma senha de app do Google; a senha normal da conta não deve ser usada. A conta precisa ter a verificação em duas etapas ativada para gerar uma senha de app. Espaços na senha de app são removidos pela aplicação. `APP_BASE_URL` deve ser a URL pública do sistema para que o link enviado por e-mail abra a tela correta.
 
 O `HTTP 202` de `POST /api/clientes` significa que o servidor SMTP do Gmail aceitou a mensagem para entrega, não que ela já chegou à caixa de entrada. O Gmail não retorna um ID de envio equivalente ao dos provedores anteriores.
 
