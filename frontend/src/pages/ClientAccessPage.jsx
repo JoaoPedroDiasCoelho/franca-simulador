@@ -12,7 +12,6 @@ export default function ClientAccessPage({ onSuccess, confirmationPage = false, 
   const [confirmationPassword, setConfirmationPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailSent, setEmailSent] = useState(false);
-  const [sendPulseId, setSendPulseId] = useState('');
   const [accountCreated, setAccountCreated] = useState(false);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -53,8 +52,7 @@ export default function ClientAccessPage({ onSuccess, confirmationPage = false, 
         await api.concluirCadastroCliente(confirmationToken, confirmationPassword);
         setAccountCreated(true);
       } else if (creatingAccount) {
-        const result = await api.solicitarCadastroCliente(registration);
-        setSendPulseId(result.idEnvio);
+        await api.solicitarCadastroCliente(registration);
         setEmailSent(true);
       } else {
         const client = await api.getCliente(credentials);
@@ -121,7 +119,7 @@ export default function ClientAccessPage({ onSuccess, confirmationPage = false, 
                 ? `Olá, ${confirmation.nome}. Crie uma senha para acessar sua conta.`
                 : 'Estamos validando seu link de cadastro.'
               : emailSent
-                ? `O SendPulse aceitou o envio do link para ${registration.email}. A entrega ainda pode levar alguns instantes; o link expira em 30 minutos.`
+                ? `O link foi enviado para ${registration.email}. A entrega pode levar alguns instantes; ele expira em 30 minutos.`
                 : creatingAccount
                   ? 'Informe seu nome e e-mail. Vamos enviar um link para você criar sua senha.'
                   : 'Entre na sua conta para continuar sua simulação.'}
@@ -134,8 +132,7 @@ export default function ClientAccessPage({ onSuccess, confirmationPage = false, 
           </a>
         </div>}
         {!checkingToken && emailSent && <div className="client-auth-success" role="status">
-          <p>Confira a caixa de entrada. Se não chegar, use esta referência para localizar o envio no histórico do SendPulse:</p>
-          <p><strong>ID do envio:</strong> <code>{sendPulseId}</code></p>
+          <p>Confira a caixa de entrada e a pasta de spam. Se não encontrar o link, solicite um novo cadastro.</p>
           <button className="button button-outline-dark button-wide client-auth-submit" type="button" onClick={() => {
             setEmailSent(false);
             setCreatingAccount(false);

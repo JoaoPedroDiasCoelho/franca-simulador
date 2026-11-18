@@ -72,10 +72,9 @@ public class ClienteService {
         conviteRepository.save(convite);
 
         String link = baseUrl + "/#/cliente/confirmacao?token=" + token;
-        String idEnvio = emailService.enviarLinkDeCadastro(dados.nome().trim(), email, link);
+        emailService.enviarLinkDeCadastro(dados.nome().trim(), email, link);
         return new CadastroSolicitadoResponseDTO(
-                "O SendPulse aceitou o envio do link de cadastro.",
-                idEnvio
+                "A solicitacao de envio do link de cadastro foi enviada ao Gmail."
         );
     }
 

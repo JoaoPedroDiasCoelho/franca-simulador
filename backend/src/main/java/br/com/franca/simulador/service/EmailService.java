@@ -1,51 +1,40 @@
 package br.com.franca.simulador.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Base64;
-import java.util.List;
 
 @Service
 public class EmailService {
 
-    private final RestClient restClient;
-    private final String apiKey;
-    private final String remetente;
+    private final JavaMailSender mailSender;
+    private final String gmailUsername;
+    private final String appPassword;
 
     public EmailService(
-            @Value("${SENDPULSE_API_KEY:}") String apiKey,
-            @Value("${SENDPULSE_FROM:}") String remetente
+            JavaMailSender mailSender,
+            @Value("${GMAIL_USERNAME:}") String gmailUsername,
+            @Value("${GMAIL_APP_PASSWORD:}") String appPassword
     ) {
-        var httpClient = java.net.http.HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .build();
-        var requestFactory = new JdkClientHttpRequestFactory(httpClient);
-        requestFactory.setReadTimeout(Duration.ofSeconds(10));
-
-        this.restClient = RestClient.builder()
-                .baseUrl("https://api.sendpulse.com")
-                .requestFactory(requestFactory)
-                .build();
-        this.apiKey = apiKey;
-        this.remetente = remetente;
+        this.mailSender = mailSender;
+        this.gmailUsername = gmailUsername;
+        this.appPassword = appPassword;
     }
 
-    public String enviarLinkDeCadastro(String nome, String email, String link) {
-        if (apiKey.isBlank() || remetente.isBlank()) {
+    public void enviarLinkDeCadastro(String nome, String email, String link) {
+        if (gmailUsername.isBlank() || appPassword.isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    "Configure SENDPULSE_API_KEY e SENDPULSE_FROM para enviar e-mails."
+                    "Configure GMAIL_USERNAME e GMAIL_APP_PASSWORD para enviar e-mails."
             );
         }
 
@@ -65,44 +54,28 @@ public class EmailService {
                 <p>O link expira em 30 minutos e pode ser usado uma unica vez.</p>
                 <p>Se voce nao solicitou o cadastro, ignore esta mensagem.</p>
                 """.formatted(escaparHtml(nome), escaparHtml(link));
-        String htmlBase64 = Base64.getEncoder()
-                .encodeToString(html.getBytes(StandardCharsets.UTF_8));
-
-        var emailRequest = new EmailRequest(new EmailContent(
-                htmlBase64,
-                text,
-                "Complete seu cadastro no França Simulador",
-                new Sender("França Simulador", remetente),
-                List.of(new Recipient(nome, email))
-        ));
-
         try {
-            SendPulseResponse response = restClient.post()
-                    .uri("/smtp/emails")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(emailRequest)
-                    .retrieve()
-                    .body(SendPulseResponse.class);
-
-            if (response == null || !response.result() || response.id() == null || response.id().isBlank()) {
-                throw new ResponseStatusException(
-                        HttpStatus.SERVICE_UNAVAILABLE,
-                        "A API do SendPulse nao confirmou o envio com um ID de mensagem."
-                );
-            }
-            return response.id();
-        } catch (RestClientResponseException exception) {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name()
+            );
+            helper.setFrom(gmailUsername, "França Simulador");
+            helper.setTo(email);
+            helper.setSubject("Complete seu cadastro no França Simulador");
+            helper.setText(text, html);
+            mailSender.send(message);
+        } catch (MessagingException | UnsupportedEncodingException exception) {
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    "SendPulse recusou o envio (HTTP %d). Confira a chave da API e se o remetente esta verificado."
-                            .formatted(exception.getStatusCode().value()),
+                    "Nao foi possivel preparar o e-mail de cadastro.",
                     exception
             );
-        } catch (RestClientException exception) {
+        } catch (MailException exception) {
             throw new ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    "Nao foi possivel conectar a API do SendPulse.",
+                    "Gmail recusou o envio. Confira o usuario, a senha de app e as configuracoes SMTP.",
                     exception
             );
         }
@@ -115,20 +88,4 @@ public class EmailService {
                 .replace("\"", "&quot;")
                 .replace("'", "&#39;");
     }
-
-    private record EmailRequest(EmailContent email) {}
-
-    private record EmailContent(
-            String html,
-            String text,
-            String subject,
-            Sender from,
-            List<Recipient> to
-    ) {}
-
-    private record Sender(String name, String email) {}
-
-    private record Recipient(String name, String email) {}
-
-    private record SendPulseResponse(boolean result, String id) {}
 }

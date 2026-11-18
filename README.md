@@ -203,16 +203,16 @@ No serviço da API, defina o diretório raiz como `backend` e cadastre estas var
 DB_URL=jdbc:postgresql://postgres.railway.internal:5432/railway
 DB_USERNAME=postgres
 DB_PASSWORD=<senha da URL PostgreSQL fornecida>
-SENDPULSE_API_KEY=<chave estática da API SendPulse>
-SENDPULSE_FROM=<remetente verificado no SendPulse>
+GMAIL_USERNAME=<endereço da conta Gmail>
+GMAIL_APP_PASSWORD=<senha de app do Google>
 APP_BASE_URL=<endereço público da aplicação>
 ```
 
 A URL `postgresql://...` do Railway deve virar `jdbc:postgresql://...` em `DB_URL`, pois a aplicação usa o driver JDBC do Java. Mantenha a API e o Postgres no mesmo projeto e ambiente do Railway para que o endereço privado `postgres.railway.internal` resolva. O servidor usa automaticamente a variável `PORT` do Railway; localmente, continua usando `SERVER_PORT` ou a porta `8080`.
 
-O cadastro envia o convite pela API REST do SendPulse (`POST https://api.sendpulse.com/smtp/emails`), autenticada com Bearer. Gere a chave de API nas configurações da conta e defina `SENDPULSE_API_KEY`; `SENDPULSE_FROM` precisa ser um remetente verificado no SendPulse. O HTML da mensagem é enviado em Base64, conforme o contrato da API. `APP_BASE_URL` deve ser a URL pública do sistema para que o link enviado por e-mail abra a tela correta.
+O cadastro envia o convite pelo SMTP do Gmail (`smtp.gmail.com:587`, com STARTTLS). Configure `GMAIL_USERNAME` com a conta Gmail e `GMAIL_APP_PASSWORD` com uma senha de app do Google; a senha normal da conta não deve ser usada. A conta precisa ter a verificação em duas etapas ativada para gerar uma senha de app. `APP_BASE_URL` deve ser a URL pública do sistema para que o link enviado por e-mail abra a tela correta.
 
-O `HTTP 202` de `POST /api/clientes` significa que o SendPulse aceitou a solicitação, não que a mensagem já chegou à caixa de entrada. A resposta inclui o `idEnvio`; use-o em `GET https://api.sendpulse.com/smtp/emails/{id}` com o mesmo Bearer para consultar o registro e o código de resposta SMTP (`smtp_answer_code`). Consulte a [documentação oficial da API SMTP](https://api.sendpulse.com/.well-known/openapi/smtp.yaml).
+O `HTTP 202` de `POST /api/clientes` significa que o servidor SMTP do Gmail aceitou a mensagem para entrega, não que ela já chegou à caixa de entrada. O Gmail não retorna um ID de envio equivalente ao dos provedores anteriores.
 
 Para cadastrar motos, configure também `ADMIN_USERNAME` (opcional; padrão `admin`) e `ADMIN_PASSWORD` com uma senha forte em `backend/.env` local ou como variáveis privadas do serviço no Railway. No primeiro início, a aplicação grava ou atualiza o usuário no PostgreSQL e armazena a senha com BCrypt. A página administrativa exige essas credenciais e usa a API para salvar cada moto. O formulário aceita imagens JPEG, PNG, WebP e GIF de até 5 MB; os arquivos enviados ficam no PostgreSQL e continuam disponíveis após reinícios e novos deploys.
 
