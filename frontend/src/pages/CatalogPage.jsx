@@ -7,7 +7,7 @@ import { routeHref } from '../utils/routes.js';
 
 const categories = ['todas', 'Street', 'Scooter', 'Trail', 'Custom', 'Esportiva'];
 
-export function CatalogPage({ clientName }) {
+export function CatalogPage({ clientName, onLogout }) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('todas');
   const [maxPrice, setMaxPrice] = useState('60000');
@@ -32,7 +32,7 @@ export function CatalogPage({ clientName }) {
     return () => window.clearTimeout(timer);
   }, [search, category, maxPrice]);
 
-  return <PageShell page="motos" clientName={clientName}>
+  return <PageShell page="motos" clientName={clientName} onLogout={onLogout}>
     <main className="page-main wrap">
       <div className="page-heading">
         <div><span className="eyebrow">Encontre a sua próxima</span><h1>Catálogo de <em>motos.</em></h1>

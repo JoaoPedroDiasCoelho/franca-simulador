@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import PageShell from '../components/PageShell.jsx';
 import { routeHref } from '../utils/routes.js';
 
-export function HomePage({ clientName }) {
+export function HomePage({ clientName, onLogout }) {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     const video = document.querySelector('.hero-video');
@@ -42,7 +42,7 @@ export function HomePage({ clientName }) {
     };
   }, []);
 
-  return <PageShell page="inicio" clientName={clientName}>
+  return <PageShell page="inicio" clientName={clientName} onLogout={onLogout}>
     <main>
       <section className="hero">
         <div className="hero-pin">

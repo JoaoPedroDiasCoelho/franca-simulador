@@ -21,7 +21,7 @@ function useRoute() {
 export default function App() {
   const { page, params } = useRoute();
   const [clientCredentials, setClientCredentials] = useState(null);
-  if (page === 'motos') return <CatalogPage clientName={clientCredentials?.nome} />;
+  if (page === 'motos') return <CatalogPage clientName={clientCredentials?.nome} onLogout={() => setClientCredentials(null)} />;
   if (page === 'resumo') {
     try {
       return <SharedSummaryPage summary={decodeSummary(params.get('dados') || '')} />;
@@ -44,5 +44,5 @@ export default function App() {
     }} />;
   }
   if (page === 'admin') return <AdminPage />;
-  return <HomePage clientName={clientCredentials?.nome} />;
+  return <HomePage clientName={clientCredentials?.nome} onLogout={() => setClientCredentials(null)} />;
 }

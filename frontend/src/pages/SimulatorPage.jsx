@@ -206,7 +206,7 @@ export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
   };
 
   return (
-    <PageShell page="simulador" clientName={clientCredentials.nome || clientCredentials.usuario}>
+    <PageShell page="simulador" clientName={clientCredentials.nome || clientCredentials.usuario} onLogout={onLogout}>
       <main className="page-main wrap simulator-main">
         <div className="page-heading">
           <div>
@@ -217,10 +217,7 @@ export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
             <p>
               Informe o valor da moto e compare parcelas, taxas e custo total.
             </p>
-            <p className="client-session">
-              Conectado como <strong>{clientCredentials.usuario}</strong>{' '}
-              <button type="button" className="text-button" onClick={onLogout}>Sair</button>
-            </p>
+            <p className="client-session">Conectado como <strong>{clientCredentials.usuario}</strong></p>
           </div>
           <span className="step-indicator">
             SIMULAÇÃO <strong>01 / 03</strong>

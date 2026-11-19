@@ -39,6 +39,15 @@ button:disabled { cursor: wait; opacity: .7; }
 .nav-links a { color: #686862; font-size: 13px; transition: color .2s ease; }
 .nav-links a:hover, .nav-links a.current { color: var(--ink); }
 .nav-profile { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--ink); font-size: 13px; font-weight: 700; }
+.nav-account { position: relative; pointer-events: auto; }
+.nav-account summary { cursor: pointer; list-style: none; }
+.nav-account summary::-webkit-details-marker { display: none; }
+.nav-account-chevron { color: var(--muted); font-size: 15px; transition: transform .2s; }
+.nav-account[open] .nav-account-chevron { transform: rotate(180deg); }
+.nav-account-menu { position: absolute; top: calc(100% + 12px); right: 0; display: grid; gap: 7px; width: 220px; border: 1px solid var(--line); border-radius: 12px; padding: 16px; color: var(--ink); background: #faf9f5; box-shadow: 0 14px 35px rgba(24,24,22,.14); }
+.nav-account-label { color: var(--muted); font-size: 10px; }
+.nav-account-menu strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.nav-account-menu button { margin-top: 5px; border: 0; border-top: 1px solid var(--line); padding: 12px 0 0; color: var(--red); background: transparent; font-size: 12px; font-weight: 700; text-align: left; }
 .nav-avatar { width: 38px; height: 38px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; background: var(--red); }
 .nav-profile-name { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 15px; border: 1px solid transparent; padding: 0 21px; font-size: 13px; font-weight: 700; transition: background .2s, color .2s, transform .2s; }
