@@ -6,6 +6,7 @@ import PageShell from "../components/PageShell.jsx";
 import ComparisonResult from "../components/ComparisonResult.jsx";
 import ConsortiumResult from "../components/ConsortiumResult.jsx";
 import FinancingResult from "../components/FinancingResult.jsx";
+import { encodeSummary } from "../utils/sharedSummary.js";
 
 export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
   const [motos, setMotos] = useState([]);
@@ -42,6 +43,28 @@ export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
     [motos, selectedId],
   );
   const price = Number(reference) || 0;
+  const currentResult = results[tab];
+  const [shareMessage, setShareMessage] = useState("");
+
+  const shareSummary = async () => {
+    const summary = {
+      type: tab,
+      result: currentResult,
+      moto: selectedMoto ? {
+        marca: selectedMoto.marca,
+        modelo: selectedMoto.modelo,
+        preco: selectedMoto.preco,
+      } : null,
+    };
+    const url = `${window.location.origin}/#/resumo?dados=${encodeSummary(summary)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareMessage("Link copiado. Pronto para enviar!");
+    } catch {
+      window.prompt("Copie o link do resumo:", url);
+      setShareMessage("Copie o link para compartilhar.");
+    }
+  };
 
   useEffect(() => {
     Promise.allSettled([api.getConfiguracao(clientCredentials), api.getMotos()]).then(
@@ -203,6 +226,18 @@ export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
             SIMULAÇÃO <strong>01 / 03</strong>
           </span>
         </div>
+        {currentResult && (
+          <div className="share-summary-bar no-print">
+            <div>
+              <strong>Quer mostrar esta simulação?</strong>
+              <span>{shareMessage || "Gere um PDF ou copie um link para enviar à família ou à loja."}</span>
+            </div>
+            <div className="summary-actions">
+              <button className="button button-outline-dark" type="button" onClick={() => window.print()}>Salvar PDF <span>↓</span></button>
+              <button className="button button-red" type="button" onClick={shareSummary}>Copiar link <span>↗</span></button>
+            </div>
+          </div>
+        )}
         {configError && (
           <p className="notice" role="status">
             {configError}

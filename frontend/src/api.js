@@ -94,17 +94,9 @@ export const api = {
     headers: withAuth(credentials),
     body: JSON.stringify(dados)
   }),
-  solicitarCadastroCliente: (dados) => request('/clientes', {
+  cadastrarCliente: (dados) => request('/clientes', {
     method: 'POST',
     body: JSON.stringify(dados)
-  }),
-  validarConviteCliente: (token) => request('/clientes/confirmacao', {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  concluirCadastroCliente: (token, senha) => request('/clientes/confirmacao', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ senha })
   }),
   getCliente: (credentials) => request('/clientes/me', { headers: withAuth(credentials) }),
   getConfiguracao: (credentials) => request('/simulacoes/configuracao', { headers: withAuth(credentials) }),

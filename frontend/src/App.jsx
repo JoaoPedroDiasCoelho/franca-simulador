@@ -4,6 +4,8 @@ import { CatalogPage } from './pages/CatalogPage.jsx';
 import ClientAccessPage from './pages/ClientAccessPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { SimulatorPage } from './pages/SimulatorPage.jsx';
+import SharedSummaryPage from './pages/SharedSummaryPage.jsx';
+import { decodeSummary } from './utils/sharedSummary.js';
 
 function useRoute() {
   const [route, setRoute] = useState(() => window.location.hash || '#/inicio');
@@ -20,6 +22,13 @@ export default function App() {
   const { page, params } = useRoute();
   const [clientCredentials, setClientCredentials] = useState(null);
   if (page === 'motos') return <CatalogPage clientName={clientCredentials?.nome} />;
+  if (page === 'resumo') {
+    try {
+      return <SharedSummaryPage summary={decodeSummary(params.get('dados') || '')} />;
+    } catch {
+      return <SharedSummaryPage summary={null} />;
+    }
+  }
   if (page === 'simulador') {
     if (!clientCredentials) return <ClientAccessPage onSuccess={setClientCredentials} />;
     return <SimulatorPage
@@ -27,9 +36,6 @@ export default function App() {
       clientCredentials={clientCredentials}
       onLogout={() => setClientCredentials(null)}
     />;
-  }
-  if (page === 'cliente/confirmacao') {
-    return <ClientAccessPage confirmationPage confirmationToken={params.get('token') || ''} />;
   }
   if (page === 'cliente') {
     return <ClientAccessPage onSuccess={(credentials) => {

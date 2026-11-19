@@ -6,10 +6,9 @@ import br.com.franca.simulador.dto.request.FinanciamentoRequestDTO;
 import br.com.franca.simulador.dto.response.ComparacaoResponseDTO;
 import br.com.franca.simulador.dto.response.ConsorcioResponseDTO;
 import br.com.franca.simulador.dto.response.FinanciamentoResponseDTO;
+import br.com.franca.simulador.domain.comparacao.ResultadoComparacao;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Service
 public class ComparadorService {
@@ -39,25 +38,17 @@ public class ComparadorService {
                 request.seguroMensalConsorcio()
         ));
 
-        BigDecimal diferencaCustoTotal = financiamento.totalPagoComEntrada()
-                .subtract(consorcio.totalEstimadoPlano())
-                .setScale(2, RoundingMode.HALF_UP);
-        BigDecimal diferencaParcela = financiamento.valorParcela()
-                .subtract(consorcio.valorParcelaEstimada())
-                .setScale(2, RoundingMode.HALF_UP);
-
-        String modalidadeMenorCusto = diferencaCustoTotal.signum() > 0
-                ? "CONSORCIO"
-                : diferencaCustoTotal.signum() < 0 ? "FINANCIAMENTO" : "CUSTOS_EQUIVALENTES";
-        BigDecimal economiaEstimada = diferencaCustoTotal.abs();
+        ResultadoComparacao comparacao = ResultadoComparacao.entre(
+                financiamento.totalPagoComEntrada(), financiamento.valorParcela(),
+                consorcio.totalEstimadoPlano(), consorcio.valorParcelaEstimada());
 
         return new ComparacaoResponseDTO(
                 financiamento,
                 consorcio,
-                diferencaCustoTotal,
-                diferencaParcela,
-                modalidadeMenorCusto,
-                economiaEstimada
+                comparacao.diferencaCustoTotal(),
+                comparacao.diferencaParcela(),
+                comparacao.modalidadeMenorCusto(),
+                comparacao.economiaEstimada()
         );
     }
 }

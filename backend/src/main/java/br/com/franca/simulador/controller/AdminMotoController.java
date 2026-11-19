@@ -33,11 +33,7 @@ public class AdminMotoController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MotoResponseDTO> atualizar(
-            @PathVariable Long id,
-            @Valid @RequestPart("dados") MotoCadastroRequestDTO dados,
-            @RequestPart(value = "imagem", required = false) MultipartFile imagem
-    ) {
+    public ResponseEntity<MotoResponseDTO> atualizar( @PathVariable Long id, @Valid @RequestPart("dados") MotoCadastroRequestDTO dados, @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
         return ResponseEntity.ok(motoService.atualizarMoto(id, dados, imagem));
     }
 

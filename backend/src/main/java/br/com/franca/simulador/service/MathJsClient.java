@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
+import br.com.franca.simulador.domain.financiamento.CalculadoraDeParcela;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,7 +16,7 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 
 @Component
-public class MathJsClient {
+public class MathJsClient implements CalculadoraDeParcela {
 
     private final RestClient restClient;
     private final String calculatorUrl;
@@ -31,7 +32,8 @@ public class MathJsClient {
         this.calculatorUrl = calculatorUrl;
     }
 
-    public BigDecimal calcularParcela(BigDecimal principal, BigDecimal taxaMensal, int prazoMeses) {
+    @Override
+    public BigDecimal calcular(BigDecimal principal, BigDecimal taxaMensal, int prazoMeses) {
         String expression = criarExpressao(principal, taxaMensal, prazoMeses);
         MathJsResponse response;
         try {
