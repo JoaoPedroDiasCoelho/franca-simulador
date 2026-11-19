@@ -10,6 +10,7 @@ import { encodeSummary } from "../utils/sharedSummary.js";
 
 export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
   const [motos, setMotos] = useState([]);
+  const [catalogLoaded, setCatalogLoaded] = useState(false);
   const [selectedId, setSelectedId] = useState(motoId || "");
   const [reference, setReference] = useState("17890");
   const [tab, setTab] = useState("financiamento");
@@ -95,9 +96,14 @@ export function SimulatorPage({ motoId, clientCredentials, onLogout }) {
               .filter(Boolean)
               .join(" "),
           );
+        setCatalogLoaded(true);
       },
     );
   }, [clientCredentials]);
+
+  useEffect(() => {
+    if (catalogLoaded && selectedId && !selectedMoto) window.location.hash = "#/motos";
+  }, [catalogLoaded, selectedId, selectedMoto]);
 
   const setError = (key, message) =>
     setErrors((current) => ({ ...current, [key]: message }));

@@ -54,7 +54,7 @@ export function HomePage({ clientName, onLogout }) {
               <h1>Financiamento ou consórcio? <em>Compare antes de assinar.</em></h1>
               <p>Simule parcelas, juros e custo total da sua moto. Veja as duas opções lado a lado e escolha com mais clareza.</p>
               <div className="hero-actions">
-                <a className="button button-red" href={routeHref('simulador')}>Simular e comparar <span>↗</span></a>
+                <a className="button button-red" href={routeHref('motos')}>Escolher uma moto <span>↗</span></a>
                 <a className="button button-outline" href={routeHref('motos')}>Explorar catálogo</a>
               </div>
               <p className="scroll-hint" style={{ opacity: 1 - Math.min(1, progress * 8) }}>Role para acompanhar a montagem <span>↓</span></p>
@@ -103,7 +103,7 @@ export function HomePage({ clientName, onLogout }) {
       </section>
       <section className="callout wrap">
         <div><span className="eyebrow">Sua próxima decisão começa nos números</span><h2>Descubra quanto a sua moto realmente custa.</h2></div>
-        <a className="button button-dark" href={routeHref('simulador')}>Começar simulação <span>↗</span></a>
+        <a className="button button-dark" href={routeHref('motos')}>Escolher uma moto <span>↗</span></a>
       </section>
     </main>
   </PageShell>;

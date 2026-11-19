@@ -21,6 +21,16 @@ function useRoute() {
 export default function App() {
   const { page, params } = useRoute();
   const [clientCredentials, setClientCredentials] = useState(null);
+  const requestedMotoId = params.get('motoId') || '';
+  useEffect(() => {
+    if (page === 'simulador' && !requestedMotoId) window.location.hash = '#/motos';
+  }, [page, requestedMotoId]);
+
+  const finishClientLogin = (credentials) => {
+    setClientCredentials(credentials);
+    window.location.hash = '#/motos';
+  };
+
   if (page === 'motos') return <CatalogPage clientName={clientCredentials?.nome} onLogout={() => setClientCredentials(null)} />;
   if (page === 'resumo') {
     try {
@@ -30,18 +40,16 @@ export default function App() {
     }
   }
   if (page === 'simulador') {
-    if (!clientCredentials) return <ClientAccessPage onSuccess={setClientCredentials} />;
+    if (!requestedMotoId) return <CatalogPage clientName={clientCredentials?.nome} onLogout={() => setClientCredentials(null)} />;
+    if (!clientCredentials) return <ClientAccessPage onSuccess={finishClientLogin} />;
     return <SimulatorPage
-      motoId={params.get('motoId') || ''}
+      motoId={requestedMotoId}
       clientCredentials={clientCredentials}
       onLogout={() => setClientCredentials(null)}
     />;
   }
   if (page === 'cliente') {
-    return <ClientAccessPage onSuccess={(credentials) => {
-      setClientCredentials(credentials);
-      window.location.hash = '#/simulador';
-    }} />;
+    return <ClientAccessPage onSuccess={finishClientLogin} />;
   }
   if (page === 'admin') return <AdminPage />;
   return <HomePage clientName={clientCredentials?.nome} onLogout={() => setClientCredentials(null)} />;
