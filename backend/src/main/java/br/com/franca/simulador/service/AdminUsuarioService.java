@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class AdminUsuarioService {
@@ -39,7 +40,13 @@ public class AdminUsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe um usuario com esse nome");
         }
 
-        usuarioRepository.save(Usuario.administrador(usuario, passwordEncoder.encode(dados.senha())));
+        String email = dados.email().trim().toLowerCase(Locale.ROOT);
+        usuarioRepository.save(Usuario.administrador(
+                usuario,
+                email,
+                dados.nome().trim(),
+                passwordEncoder.encode(dados.senha())
+        ));
 
         return new UsuarioResponseDTO(usuario);
     }

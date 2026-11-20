@@ -16,6 +16,8 @@ export default function AdminUsers({ users, loading, error, saving, currentUsern
     try {
       const created = await onCreate({
         usuario: String(data.get('usuario')).trim(),
+        nome: String(data.get('nome')).trim(),
+        email: String(data.get('email')).trim(),
         senha: String(data.get('senha'))
       });
       form.reset();
@@ -47,6 +49,8 @@ export default function AdminUsers({ users, loading, error, saving, currentUsern
     <div className="admin-users-layout">
       <form className="admin-user-form" onSubmit={submit}><span className="eyebrow">NOVO ACESSO</span><h2>Criar usuário</h2><p>As senhas são armazenadas com hash BCrypt.</p>
         <label className="field"><span>Usuário *</span><input name="usuario" minLength="1" maxLength="50" pattern="[A-Za-z0-9._-]+" autoComplete="off" placeholder="Ex.: joao.silva" required /></label>
+        <label className="field"><span>Nome completo *</span><input name="nome" maxLength="150" autoComplete="name" placeholder="Ex.: João da Silva" required /></label>
+        <label className="field"><span>E-mail *</span><input name="email" type="email" maxLength="254" autoComplete="email" placeholder="Ex.: joao@email.com" required /></label>
         <label className="field"><span>Senha (mínimo 8 caracteres) *</span><input name="senha" type="password" minLength="8" maxLength="72" autoComplete="new-password" required /></label>
         <button className="button button-red button-wide" disabled={saving}>{saving ? 'Criando…' : 'Criar usuário'} <span aria-hidden="true">↗</span></button>
         <p className={`form-message ${messageError ? 'message-error' : ''}`} role="status" aria-live="polite">{message}</p>

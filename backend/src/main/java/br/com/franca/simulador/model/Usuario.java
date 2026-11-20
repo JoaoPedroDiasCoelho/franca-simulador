@@ -50,6 +50,10 @@ public class Usuario {
         return new Usuario(username, null, null, senhaCodificada, true, ROLE_ADMIN);
     }
 
+    public static Usuario administrador(String username, String email, String nome, String senhaCodificada) {
+        return new Usuario(username, email, nome, senhaCodificada, true, ROLE_ADMIN);
+    }
+
     public static Usuario cliente(String email, String nome, String senhaCodificada) {
         return new Usuario(email, email, nome, senhaCodificada, true, ROLE_CLIENTE);
     }
