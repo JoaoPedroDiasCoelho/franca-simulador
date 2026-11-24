@@ -35,11 +35,11 @@ export default function ClientAccessPage({ onSuccess }) {
         onSuccess({ ...credentials, nome: client.nome || client.usuario });
       }
     } catch (error) {
-      if (creatingAccount && error.status === 409 && /e-mail|email/i.test(error.message)) {
+      if (creatingAccount && (error.status === 409 || error.message.startsWith('Ocorreu um erro'))) {
         setEmailError('Este e-mail j\u00e1 est\u00e1 cadastrado. Informe outro e-mail ou entre na sua conta.');
       } else {
-      setMessage(error.status === 401 || error.status === 403
-        ? 'Usuário ou senha inválidos.'
+        setMessage(error.status === 401 || error.status === 403
+          ? 'Usuário ou senha inválidos.'
         : error.message);
       }
     } finally {
