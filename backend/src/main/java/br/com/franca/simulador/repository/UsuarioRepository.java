@@ -20,6 +20,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
     boolean existsByUsername(String username);
 
+    boolean existsByEmailIgnoreCase(String email);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select usuario from Usuario usuario where usuario.role = :role and usuario.enabled = true")
     List<Usuario> findEnabledByRoleForUpdate(@Param("role") String role);

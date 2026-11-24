@@ -3,6 +3,7 @@ import { useState } from 'react';
 export default function AdminUsers({ users, loading, error, saving, currentUsername, onRefresh, onCreate, onDelete }) {
   const [message, setMessage] = useState('');
   const [messageError, setMessageError] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const [deletingUsername, setDeletingUsername] = useState(null);
   const [deleteMessage, setDeleteMessage] = useState('');
   const [deleteError, setDeleteError] = useState(false);
@@ -11,6 +12,7 @@ export default function AdminUsers({ users, loading, error, saving, currentUsern
     event.preventDefault();
     setMessage('');
     setMessageError(false);
+    setEmailError('');
     const form = event.currentTarget;
     const data = new FormData(form);
     try {
@@ -24,7 +26,11 @@ export default function AdminUsers({ users, loading, error, saving, currentUsern
       setMessage(`Usuário ${created.usuario} criado com sucesso.`);
     } catch (requestError) {
       setMessageError(true);
-      setMessage(requestError.message);
+      if (requestError.status === 409 && /e-mail|email/i.test(requestError.message)) {
+        setEmailError('Este e-mail já está cadastrado. Informe outro e-mail.');
+      } else {
+        setMessage(requestError.message);
+      }
     }
   };
 
@@ -50,7 +56,7 @@ export default function AdminUsers({ users, loading, error, saving, currentUsern
       <form className="admin-user-form" onSubmit={submit}><span className="eyebrow">NOVO ACESSO</span><h2>Criar usuário</h2><p>As senhas são armazenadas com hash BCrypt.</p>
         <label className="field"><span>Usuário *</span><input name="usuario" minLength="1" maxLength="50" pattern="[A-Za-z0-9._-]+" autoComplete="off" placeholder="Ex.: joao.silva" required /></label>
         <label className="field"><span>Nome completo *</span><input name="nome" maxLength="150" autoComplete="name" placeholder="Ex.: João da Silva" required /></label>
-        <label className="field"><span>E-mail *</span><input name="email" type="email" maxLength="254" autoComplete="email" placeholder="Ex.: joao@email.com" required /></label>
+        <label className="field"><span>E-mail *</span><input name="email" type="email" maxLength="254" autoComplete="email" placeholder="Ex.: joao@email.com" aria-invalid={Boolean(emailError)} aria-describedby={emailError ? 'admin-user-email-error' : undefined} onChange={() => setEmailError('')} required />{emailError && <span id="admin-user-email-error" className="field-error" role="alert">{emailError}</span>}</label>
         <label className="field"><span>Senha (mínimo 8 caracteres) *</span><input name="senha" type="password" minLength="8" maxLength="72" autoComplete="new-password" required /></label>
         <button className="button button-red button-wide" disabled={saving}>{saving ? 'Criando…' : 'Criar usuário'} <span aria-hidden="true">↗</span></button>
         <p className={`form-message ${messageError ? 'message-error' : ''}`} role="status" aria-live="polite">{message}</p>

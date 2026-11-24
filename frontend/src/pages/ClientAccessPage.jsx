@@ -123,11 +123,11 @@ export default function ClientAccessPage({ onSuccess }) {
               />
             </Field>
           </> : <>
-            <Field label="E-mail ou usuário">
+            <Field label="E-mail">
               <input
                 autoComplete="username"
                 maxLength="254"
-                placeholder="Seu e-mail ou usuário"
+                placeholder="Seu e-mail"
                 required
                 value={credentials.usuario}
                 onChange={(event) => setCredentials({ ...credentials, usuario: event.target.value })}

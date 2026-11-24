@@ -419,6 +419,8 @@ tbody th { font-weight: 600; }
 .admin-user-form .eyebrow { color: #85867e; font-size: 8px; }
 .admin-user-form > p { margin-top: -12px; }
 .admin-user-form .field { gap: 7px; }
+.admin-user-form .field input[aria-invalid="true"] { border-color: var(--red); }
+.admin-user-form .field .field-error { display: block; color: var(--red); font-size: 10px; font-weight: 500; line-height: 1.4; }
 .admin-user-form .button { min-height: 42px; border-radius: 8px; font-size: 10px; }
 .admin-users-list .admin-inventory-table table { min-width: 0; }
 .admin-user-cell { display: flex; align-items: center; gap: 9px; }
