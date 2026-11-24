@@ -11,7 +11,7 @@ const PAGE_SIZE = 9;
 export function CatalogPage({ clientName, onLogout }) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('todas');
-  const [maxPrice, setMaxPrice] = useState('60000');
+  const [maxPrice, setMaxPrice] = useState('200000');
   const [motos, setMotos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [status, setStatus] = useState('loading');
@@ -47,7 +47,7 @@ export function CatalogPage({ clientName, onLogout }) {
       </div>
       <section className="filter-panel">
         <label className="field search-field"><span>Buscar por marca ou modelo</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Ex.: Honda, CG 160, 300cc..." /></label>
-        <label className="field price-field"><span>Preço máximo <strong>{currency(maxPrice)}</strong></span><input type="range" min="10000" max="60000" step="1000" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} /></label>
+        <label className="field price-field"><span>Preço máximo <strong>{currency(maxPrice)}</strong></span><input type="range" min="10000" max="200000" step="1000" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} /></label>
         <div className="category-row"><span>Categoria</span>{categories.map((item) => <button key={item} type="button" aria-pressed={category === item} className={`filter-chip ${category === item ? 'selected' : ''}`} onClick={() => setCategory(item)}>{item === 'todas' ? 'Todas' : item}</button>)}</div>
       </section>
       {status === 'loading' && <div className="state-card" role="status"><span className="loader" />Carregando motos do catálogo…</div>}
