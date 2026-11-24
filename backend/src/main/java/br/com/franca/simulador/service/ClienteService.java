@@ -26,7 +26,7 @@ public class ClienteService {
     @Transactional
     public ClienteAtualResponseDTO cadastrar(CadastroClienteRequestDTO dados) {
         String email = dados.email().trim().toLowerCase(Locale.ROOT);
-        if (usuarioRepository.existsByUsername(email)) {
+        if (usuarioRepository.existsByUsername(email) || usuarioRepository.existsByEmailIgnoreCase(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe uma conta com esse e-mail.");
         }
 

@@ -41,9 +41,6 @@ public class AdminUsuarioService {
         }
 
         String email = dados.email().trim().toLowerCase(Locale.ROOT);
-        if (usuarioRepository.existsByEmailIgnoreCase(email)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ja existe uma conta com esse e-mail.");
-        }
         usuarioRepository.save(Usuario.administrador(
                 usuario,
                 email,

@@ -289,6 +289,8 @@ tbody th { font-weight: 600; }
 .client-auth-card .field input { min-height: 50px; border-color: #e1dfd8; border-radius: 10px; padding-inline: 14px; background: rgba(255,255,255,.75); font-size: 12px; }
 .client-auth-card .field input:focus { border-color: #b87568; box-shadow: 0 0 0 4px rgba(217,56,45,.08); }
 .client-auth-card .field input::placeholder { color: #aaa9a1; }
+.client-auth-card .field input[aria-invalid="true"] { border-color: #b42c24; }
+.client-auth-field-error { display: block; color: #a43b31; font-size: 10px; line-height: 1.5; }
 .client-auth-submit { min-height: 52px; justify-content: space-between; margin-top: 4px; border-radius: 10px; padding-inline: 17px; font-size: 11px; }
 .client-auth-submit span { font-size: 17px; }
 .client-auth-error { margin: -3px 0 0; border: 1px solid #f0d7d2; border-radius: 8px; padding: 10px 12px; color: #a43b31; background: #fff5f3; font-size: 10px; line-height: 1.5; }
@@ -419,8 +421,6 @@ tbody th { font-weight: 600; }
 .admin-user-form .eyebrow { color: #85867e; font-size: 8px; }
 .admin-user-form > p { margin-top: -12px; }
 .admin-user-form .field { gap: 7px; }
-.admin-user-form .field input[aria-invalid="true"] { border-color: var(--red); }
-.admin-user-form .field .field-error { display: block; color: var(--red); font-size: 10px; font-weight: 500; line-height: 1.4; }
 .admin-user-form .button { min-height: 42px; border-radius: 8px; font-size: 10px; }
 .admin-users-list .admin-inventory-table table { min-width: 0; }
 .admin-user-cell { display: flex; align-items: center; gap: 9px; }

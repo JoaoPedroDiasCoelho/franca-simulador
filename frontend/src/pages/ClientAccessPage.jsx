@@ -10,11 +10,13 @@ export default function ClientAccessPage({ onSuccess }) {
   const [registration, setRegistration] = useState({ nome: '', email: '', senha: '' });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [busy, setBusy] = useState(false);
 
   const submit = async (event) => {
     event.preventDefault();
     setMessage('');
+    setEmailError('');
     setBusy(true);
     try {
       if (creatingAccount) {
@@ -33,9 +35,13 @@ export default function ClientAccessPage({ onSuccess }) {
         onSuccess({ ...credentials, nome: client.nome || client.usuario });
       }
     } catch (error) {
+      if (creatingAccount && error.status === 409 && /e-mail|email/i.test(error.message)) {
+        setEmailError('Este e-mail j\u00e1 est\u00e1 cadastrado. Informe outro e-mail ou entre na sua conta.');
+      } else {
       setMessage(error.status === 401 || error.status === 403
         ? 'Usuário ou senha inválidos.'
         : error.message);
+      }
     } finally {
       setBusy(false);
     }
@@ -94,9 +100,15 @@ export default function ClientAccessPage({ onSuccess }) {
                 maxLength="254"
                 placeholder="voce@exemplo.com"
                 required
+                aria-invalid={Boolean(emailError)}
+                aria-describedby={emailError ? 'client-email-error' : undefined}
                 value={registration.email}
-                onChange={(event) => setRegistration({ ...registration, email: event.target.value })}
+                onChange={(event) => {
+                  setRegistration({ ...registration, email: event.target.value });
+                  setEmailError('');
+                }}
               />
+              {emailError && <span id="client-email-error" className="client-auth-field-error" role="alert">{emailError}</span>}
             </Field>
             <Field label="Senha">
               <input
@@ -160,6 +172,7 @@ export default function ClientAccessPage({ onSuccess }) {
             onClick={() => {
               setCreatingAccount(!creatingAccount);
               setMessage('');
+              setEmailError('');
             }}
           >
             {creatingAccount ? 'Entrar' : 'Criar conta'}
