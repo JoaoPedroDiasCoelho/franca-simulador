@@ -142,6 +142,11 @@ button:disabled { cursor: wait; opacity: .7; }
 .loader { width: 23px; height: 23px; border: 2px solid #d8d7d0; border-top-color: var(--red); border-radius: 50%; animation: spin .75s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .moto-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.catalog-pagination { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 30px 0 12px; }
+.catalog-page-button { min-width: 40px; min-height: 40px; border: 1px solid var(--line); padding: 0 13px; color: var(--ink); background: #f0efe9; font: inherit; font-size: 11px; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+.catalog-page-button:hover:not(:disabled), .catalog-page-button.active { border-color: var(--ink); color: #fff; background: var(--ink); }
+.catalog-page-button:disabled { color: #aaa9a1; background: #f8f7f3; cursor: not-allowed; }
+.catalog-page-status { padding: 0 8px; color: #77776f; font-size: 11px; }
 .moto-card { border: 1px solid var(--line); background: #f0efe9; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
 .moto-card:hover { transform: translateY(-4px); border-color: #c9c7bf; box-shadow: 0 14px 28px rgba(32,32,30,.08); }
 .moto-visual { position: relative; height: 220px; overflow: hidden; background: #dfded8; }
